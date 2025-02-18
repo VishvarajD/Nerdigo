@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #chat-box {
+            border: 2px solid black;
+            width: 50%;
+            height: 300px;
+            margin: auto;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        input {
+            width: 40%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        button {
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Community Chat</h1>
+    <h3>Welcome, <span id="usernameDisplay">Guest</span></h3>
+
+    <div id="chat-box"></div>
+    
+    <input type="text" id="chatInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        function getToken() {
+            const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+            return token ? token.split('=')[1] : null;
+        }
+
+        const token = getToken();
+
+        const socket = io({
+            auth: { token }
+        });
+
+        let username = "Guest";
+
+        function getUsernameFromToken() {
+            if (!token) return "Guest";
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1])); 
+                return payload.username || "Guest"; 
+            } catch (err) {
+                console.error("Error decoding token:", err);
+                return "Guest";
+            }
+        }
+
+        username = getUsernameFromToken();
+        document.getElementById("usernameDisplay").innerText = username;
+
+        function sendMessage() {
+            const message = document.getElementById('chatInput').value;
+            if (message.trim() === "") return;
+
+            socket.emit('chatMessage', { sender: username, message });
+            document.getElementById('chatInput').value = '';
+        }
+
+        // Load previous messages when connected
+        socket.on('previousMessages', (messages) => {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = ""; // Clear existing messages
+
+            messages.forEach(msg => {
+                chatBox.innerHTML += `<p><strong>${msg.sender}:</strong> ${msg.message} <small>${new Date(msg.timestamp).toLocaleTimeString()}</small></p>`;
+            });
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        socket.on('chatMessage', (msgData) => {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<p><strong>${msgData.sender}:</strong> ${msgData.message} <small>${new Date(msgData.timestamp).toLocaleTimeString()}</small></p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+
+</body>
+</html>
