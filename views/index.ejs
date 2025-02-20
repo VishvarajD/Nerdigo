@@ -1,1 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nerdigo - Connect to Opportunities</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&family=Gowun+Batang:wght@400;700&family=Lobster&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&family=Gowun+Batang:wght@400;700&family=Kalam:wght@300;400;700&family=Lobster&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Piedra&family=Playwrite+IT+Moderna:wght@100..400&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            text-align: center;
+        }
+        nav {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+        nav ul li {
+            display: inline;
+            font-size: 20px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .cta-button {
+            background-color: #f1c40f;
+            color: #1e1e1e;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            font-family: "Piedra", serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 20px;
+            
+        }
+        .cta-button:hover {
+            transform: translateY(-20px);
+           
+        }
+        .hero-section {
+            padding: 100px 20px;
+        }
+        .tagline {
+            font-size: 48px;
+            margin-bottom: 10px;
+            /* margin-top: 50px; */
+
+        }
+        .hero-section p {
+            font-size: 18px;
+            color: #b3b3b3;
+        }
+        .Title{
+            font-family: "Playwrite IT Moderna", serif;
+            font-optical-sizing: auto;
+            font-size: 75px;
+            color: yellowgreen;
+  
+  
+  font-weight: 800;
+  font-style: normal;
+        }
+        .action-buttons {
+            margin-top: 30px;
+        }
+        .action-buttons a {
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .logo{
+            font-family: "Lobster", serif;
+            font-weight: 600;
+            font-size:35px;
+            font-style: normal;
+        }
+
+        .info-section {
+            background-color: #34495e;
+            color: #fff;
+            padding: 50px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+        .info-text {
+            max-width: 400px;
+            text-align: left;
+        }
+        .info-text h2 {
+            font-size: 32px;
+            color: #f1c40f;
+        }
+        .info-text p {
+            color: #dcdcdc;
+        }
+        .info-text a {
+            color: #f1c40f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .info-image img {
+            max-width: 100%;
+            max-height: 30%;
+            border-radius: 10px;
+        }
+
+        .how-it-works-section {
+            background-color: #1e1e1e;
+            color: #fff;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .how-it-works-section h2 {
+            font-size: 36px;
+            color: #f1c40f;
+        }
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .step {
+            background: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            max-width: 300px;
+        }
+        .step h3 {
+            color: #f1c40f;
+        }
+        .step p {
+            color: #dcdcdc;
+        }
+        .footer-section {
+    background-color: #1e1e1e;
+    color: #dcdcdc;
+    padding: 50px 20px;
+    text-align: center;
+}
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.footer-logo h2 {
+    color: #f1c40f;
+}
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+.footer-links ul li {
+    margin: 5px 0;
+}
+.footer-links a {
+    color: #dcdcdc;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.footer-links a:hover {
+    color: #f1c40f;
+}
+.footer-social img {
+    width: 30px;
+    margin: 0 5px;
+    transition: transform 0.3s;
+}
+.footer-social img:hover {
+    transform: scale(1.2);
+}
+.footer-bottom {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #888;
+}
+nav ul li a {
+    display: inline-block;
+    transition: transform 0.7s ease;
+}
+
+nav ul li a:hover {
+    /* transform: translateY(-5px); */
+    transform: translateX(-10px);
+}
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">Nerdigo</div>
+        <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Opportunities</a></li>
+            <li><a href="#">Contact</a></li>
+            <% if (check) { %> 
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/logout">Logout</a></li>
+            <% } else { %>
+                <li><a href="/signup">SignUp</a></li>
+                <li><a href="/login">Login</a></li>
+            <% } %>
+
+        </ul>
+        <% if (check) { %>
+            <a href="/community"><button class="cta-button" >Get Started</button></a>
+            <% } else { %>
+                <a href="/login"><button class="cta-button" >Get Started</button></a>
+
+            <% } %>
+    </nav>
+    <section class="hero-section">
+        <h1 class="Title">Nerdigo</h1>
+        <h1 class="tagline">Where Talent Meets Opportunity</h1>
+        <p>'Bridging bright minds with networks and companies.'</p>
+        <div class="action-buttons">
+            <a href="#"><button class="cta-button">Explore Now</button></a>
+            <a href="#"><button class="cta-button" style="background-color: transparent; border: 2px solid #f1c40f; color: #f1c40f;">Learn More</button></a>
+           
+        </div>
+    </section>
+    <!-- <section class="info-section">
+        <div class="info-text">
+            <h2>Unlock Your Potential</h2>
+            <p>Join a community of bright minds and access exclusive opportunities. Build networks that matter.</p>
+            <a href="#">Learn more →</a>
+        </div>
+    </section> -->
+    <div class="info-image">
+        <img src="/images/poster.png" alt="Nerdigo Illustration">
+    </div>
+    <section class="how-it-works-section">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <h3>Step 1: Sign Up</h3>
+                <p>Create your profile and showcase your skills.</p>
+            </div>
+            <div class="step">
+                <h3>Step 2: Connect</h3>
+                <p>Network with peers, mentors, and companies.</p>
+            </div>
+            <div class="step">
+                <h3>Step 3: Grow</h3>
+                <p>Access exclusive opportunities and grow your career.</p>
+            </div>
+        </div>
+    </section>
+    <footer class="footer-section">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <h2>Nerdigo</h2>
+                <p>Connecting bright minds with opportunities.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Opportunities</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Follow Us</h3>
+                <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/facebook-circled.png" alt="Facebook"></a>
+                <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/twitter-circled.png" alt="Twitter"></a>
+                <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/linkedin-circled.png" alt="LinkedIn"></a>
+                <!-- <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/instagram-circled.png " alt="Instagram"></a> -->
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <p>Email: info@nerdigo.com</p>
+                <p>Phone: +123 456 7890</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Nerdigo. All rights reserved.</p>
+        </div>
+    </footer>
+    
+</body>
+</html>
  

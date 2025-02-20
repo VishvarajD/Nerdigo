@@ -34,13 +34,38 @@ function getUserFromToken(req) {
     }
     return null; // Return null if no valid token found
 }
+function isLoggedInorNot(req) {
+    const token = req.cookies.token;
+
+    if (token) {
+        try {
+            jwt.verify(token, 'default_secret');
+            return true;
+        } catch (err) {
+            console.error("Invalid token:", err);
+            return false;  // Add this line to explicitly return false
+        }
+    } else {
+        return false;
+    }
+}
 
 // **ROUTES**
+
+app.get('/', (req, res) => {
+    const check = isLoggedInorNot(req);
+    res.render('index', { check });
+});
 
 // **Dashboard Route**
 app.get('/dashboard', (req, res) => {
     const username = getUserFromToken(req); // Get username from token
     res.render('userDashboard', { username }); // Render dashboard with username
+});
+
+app.get('/logout', (req, res) => {
+    res.cookie('token' , '');
+    res.redirect('login');
 });
 
 // **Login and Signup Pages**
@@ -179,3 +204,4 @@ io.on('connection', async (socket) => {
 
 // **Start Server**
 server.listen(3000, () => console.log('Server running on port 3000'));
+
