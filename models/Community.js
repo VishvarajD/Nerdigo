@@ -8,16 +8,13 @@ try {
 }
 
 
-const CommunitySchema = new mongoose.Schema({
-    topic: String,
-    content: String,
-    postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    messages: [{
-        sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        message: String,
-        timestamp: { type: Date, default: Date.now }
-    }]
+const communitySchema = new mongoose.Schema({
+    name: { type: String, required: true, unique: true },
+    description: String,
+    admin: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Community', CommunitySchema);
+module.exports = mongoose.model('Community', communitySchema);
 
