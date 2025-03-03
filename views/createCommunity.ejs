@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="create-community">
+        <h2>Create a New Community</h2>
+        <form id="createCommunityForm">
+            <input type="text" id="communityName" placeholder="Community Name" required />
+            <textarea id="communityDescription" placeholder="Community Description" required></textarea>
+            <button type="submit">Create Community</button>
+        </form>
+    </div>
+    
+    <script>
+      document.getElementById('createCommunityForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log("Form submitted!"); // Debug: Check if the form is being submitted
+
+    const name = document.getElementById('communityName').value;
+    const description = document.getElementById('communityDescription').value;
+
+    console.log({ name, description }); // Debug: Check the form data
+
+    try {
+        const response = await fetch('/create-community', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, description })
+        });
+
+        // If the response is a redirect, the browser will handle it automatically
+        if (response.redirected) {
+            window.location.href = response.url; // Follow the redirect
+        } else if (response.ok) {
+            const result = await response.json();
+            alert('Community created successfully!');
+        } else {
+            // Log the response text for debugging
+            const responseText = await response.text();
+            console.error("Server response:", responseText);
+            alert('Error creating community. Check the console for details.');
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        alert('An error occurred while creating the community.');
+    }
+});
+    </script>
+</body>
+</html>

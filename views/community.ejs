@@ -3,140 +3,1041 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nerdigo - Community Chat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <title>Nerdigo - Communities</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #1e1e1e;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2c3e50 100%);
             color: #ffffff;
-            text-align: center;
-            margin: 0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
-        h1 {
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 2px solid rgba(241, 196, 15, 0.1);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #f1c40f, #e74c3c);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
             color: #f1c40f;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             margin-bottom: 10px;
         }
-        h3 {
-            color: #b3b3b3;
+
+        .header p {
+            color: #ecf0f1;
+            font-size: 1.1rem;
         }
-        #chat-box {
-            background-color: #2c3e50;
-            border: 2px solid #adb8c3;
-            width: 60%;
-            height: 400px;
-            margin: 20px auto;
-            padding: 15px;
-            overflow-y: auto;
-            border-radius: 10px;
-            text-align: left;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-        }
-        .message {
-            background: #34495e;
-            color: #dcdcdc;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 10px;
-            max-width: 80%;
-        }
-        .message.user {
-            background: #f1c40f;
+
+        .create-btn {
+            background: linear-gradient(45deg, #f1c40f, #f39c12);
             color: #1e1e1e;
-            text-align: right;
-        }
-        input[type="text"] {
-            width: 60%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            border: 2px solid #34495e;
-            background-color: #2c3e50;
-            color: #fff;
-        }
-        button {
-            background-color: #f1c40f;
-            color: #1e1e1e;
-            padding: 10px 15px;
+            padding: 15px 30px;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: bold;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
         }
-        button:hover {
+
+        .create-btn:hover {
             transform: translateY(-3px);
-        }
-    </style>
-</head>
-<body>
-    <h1>Nerdigo Community Chat</h1>
-    <h3>Welcome, <span id="usernameDisplay">Guest</span></h3>
-
-    <div id="chat-box">
-        <!-- Messages will appear here -->
-    </div>
-    
-    <input type="text" id="chatInput" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        function getToken() {
-            const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-            return token ? token.split('=')[1] : null;
+            box-shadow: 0 6px 20px rgba(241, 196, 15, 0.4);
         }
 
-        const token = getToken();
+        .communities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
 
-        const socket = io({
-            auth: { token }
-        });
+        .community-card {
+            background: rgba(44, 62, 80, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
 
-        let username = "Guest";
+        .community-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #f1c40f, #e74c3c);
+        }
 
-        function getUsernameFromToken() {
-            if (!token) return "Guest";
+        .community-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
 
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1])); 
-                return payload.username || "Guest"; 
-            } catch (err) {
-                console.error("Error decoding token:", err);
-                return "Guest";
+        .community-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .community-name {
+            color: #f1c40f;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .member-count {
+            background: rgba(52, 73, 94, 0.8);
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .description {
+            color: #ecf0f1;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            line-height: 1.7;
+            padding: 0 10px;
+        }
+
+        .members-section {
+            background: rgba(52, 73, 94, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .members-section h3 {
+            color: #f1c40f;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .member-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(44, 62, 80, 0.7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .member-item:hover {
+            background: rgba(44, 62, 80, 0.9);
+            transform: translateX(5px);
+        }
+
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .add-member-btn {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(110%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .communities-grid {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .community-card {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
             }
         }
 
-        username = getUsernameFromToken();
-        document.getElementById("usernameDisplay").innerText = username;
-
-        function sendMessage() {
-            const message = document.getElementById('chatInput').value;
-            if (message.trim() === "") return;
-
-            socket.emit('chatMessage', { sender: username, message });
-            document.getElementById('chatInput').value = '';
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        // Load previous messages when connected
-        socket.on('previousMessages', (messages) => {
-            const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML = ""; // Clear existing messages
+        .modal-content {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
-            messages.forEach(msg => {
-                chatBox.innerHTML += `<p><strong>${msg.sender}:</strong> ${msg.message} <small>${new Date(msg.timestamp).toLocaleTimeString()}</small></p>`;
-            });
+        .modal-content h2 {
+            color: #f1c40f;
+            margin-bottom: 20px;
+        }
 
-            chatBox.scrollTop = chatBox.scrollHeight;
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f1c40f;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #34495e;
+            border-radius: 4px;
+            background: #34495e;
+            color: #fff;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f1c40f;
+            box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.2);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #95a5a6;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .create-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .chat-section {
+            margin-top: 15px;
+        }
+
+        .chat-toggle-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-toggle-btn:hover {
+            background: #2980b9;
+        }
+
+        .chat-modal-content {
+            height: 80vh;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            display: flex;
+            flex-direction: column;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: rgba(52, 73, 94, 0.9);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-message {
+            padding: 12px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-message.sent {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-message.received {
+            background: rgba(52, 73, 94, 0.8);
+            color: white;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            background: rgba(52, 73, 94, 0.9);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(44, 62, 80, 0.8);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.3);
+        }
+
+        .chat-input-area button {
+            background: #f1c40f;
+            color: #2c3e50;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-area button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3);
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #f1c40f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .join-btn {
+            background: #e67e22;
+            color: white;
+        }
+
+        .join-btn:hover {
+            background: #d35400;
+        }
+
+        .disabled-btn {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .pending-members-section {
+            background: rgba(52, 73, 94, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .pending-member-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .approval-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .approve-btn, .reject-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .approve-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .reject-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .approve-btn:hover, .reject-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(110%);
+        }
+
+        .join-btn.pending {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body data-username="<%= username %>">
+    <div class="container">
+        <div class="header">
+            <h1>Communities</h1>
+            <p>Connect, collaborate, and grow together</p>
+            <button class="create-btn" onclick="showCreateModal()">
+                <i class="fas fa-plus"></i>
+                Create Community
+            </button>
+        </div>
+
+        <div class="communities-grid">
+            <% communities.forEach(community => { %>
+                <div class="community-card">
+                    <div class="community-header">
+                        <h2 class="community-name"><%= community.name %></h2>
+                        <div class="member-count">
+                            <i class="fas fa-users"></i>
+                            <%= community.members.length %> members
+                        </div>
+                    </div>
+
+                    <p class="description"><%= community.description %></p>
+
+                    <div class="members-section">
+                        <h3><i class="fas fa-user-circle"></i> Members</h3>
+                        <% community.members.forEach(member => { %>
+                            <div class="member-item">
+                                <div class="member-info">
+                                    <div class="member-avatar">
+                                        <%= member.username.charAt(0) %>
+                                    </div>
+                                    <span><%= member.username %></span>
+                                </div>
+                                <% if (community.admin && community.admin._id.toString() === userId && member._id.toString() !== community.admin._id.toString()) { %>
+                                    <button class="remove-btn" onclick="removeMember('<%= community._id %>', '<%= member._id %>')">
+                                        <i class="fas fa-user-minus"></i>
+                                    </button>
+                                <% } %>
+                            </div>
+                        <% }) %>
+                    </div>
+
+                    <% if (community.admin && community.admin._id.toString() === userId && community.pendingMembers.length > 0) { %>
+                        <div class="pending-members-section">
+                            <h3><i class="fas fa-user-clock"></i> Pending Requests</h3>
+                            <% community.pendingMembers.forEach(member => { %>
+                                <div class="pending-member-item">
+                                    <i class="fas fa-user-circle"></i>
+                                    <%= member.username %>
+                                    <div class="approval-buttons">
+                                        <button class="approve-btn" onclick="handleJoinRequest('<%= community._id %>', '<%= member._id %>', true)">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="reject-btn" onclick="handleJoinRequest('<%= community._id %>', '<%= member._id %>', false)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } %>
+
+                    <div class="action-buttons">
+                        <% if (community.members.some(member => member._id.toString() === userId)) { %>
+                            <button class="action-btn chat-btn" onclick="toggleChat('<%= community._id %>', '<%= community.name %>')">
+                                <i class="fas fa-comments"></i>
+                                Chat
+                            </button>
+                        <% } else { %>
+                            <button class="action-btn join-btn" onclick="joinCommunity('<%= community._id %>')">
+                                <i class="fas fa-user-plus"></i>
+                                Join Community
+                            </button>
+                        <% } %>
+                        
+                        <% if (community.admin && community.admin._id.toString() === userId) { %>
+                            <button class="action-btn add-member-btn" onclick="showAddMemberModal('<%= community._id %>')">
+                                <i class="fas fa-user-plus"></i>
+                                Add Member
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- Create Community Modal -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideCreateModal()">&times;</button>
+            <h2>Create New Community</h2>
+            <form id="createCommunityForm">
+                <div class="form-group">
+                    <label for="communityName">Community Name</label>
+                    <input 
+                        type="text" 
+                        id="communityName" 
+                        name="name"
+                        placeholder="Enter community name"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="communityDescription">Description</label>
+                    <textarea 
+                        id="communityDescription" 
+                        name="description"
+                        placeholder="Enter community description"
+                        rows="4" 
+                        required
+                    ></textarea>
+                </div>
+                <button type="submit" class="create-btn">Create Community</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideAddMemberModal()">&times;</button>
+            <h2>Add Member</h2>
+            <form id="addMemberForm">
+                <input type="hidden" id="communityId">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <button type="submit" class="create-btn">Add Member</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add this new chat modal at the bottom of the body, before the scripts -->
+    <div id="chatModal" class="modal">
+        <div class="chat-modal-content">
+            <div class="chat-header">
+                <h2 id="chatRoomName">Community Chat</h2>
+                <button class="close-btn" onclick="hideChat()">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let currentCommunityId = null;
+        const socket = io({
+            auth: {
+                token: document.cookie.split('token=')[1]
+            }
+        });
+        
+        function toggleChat(communityId, communityName) {
+            // Get the community card element
+            const communityCard = event.target.closest('.community-card');
+            const isMember = communityCard.querySelector('.chat-btn') !== null;
+
+            if (!isMember) {
+                alert('You must be a member to chat in this community');
+                return;
+            }
+
+            currentCommunityId = communityId;
+            document.getElementById('chatRoomName').textContent = communityName;
+            document.getElementById('chatModal').style.display = 'flex';
+            document.getElementById('chatMessages').innerHTML = '';
+            
+            console.log('Joining community chat:', communityId);
+            socket.emit('joinCommunityRoom', communityId);
+            loadPreviousMessages(communityId);
+        }
+
+        function hideChat() {
+            if (currentCommunityId) {
+                socket.emit('leaveCommunityRoom', currentCommunityId);
+            }
+            document.getElementById('chatModal').style.display = 'none';
+            currentCommunityId = null;
+        }
+
+        async function loadPreviousMessages(communityId) {
+            try {
+                console.log('Loading messages for community:', communityId);
+                const response = await fetch(`/api/community-messages/${communityId}`);
+                const messages = await response.json();
+                console.log('Loaded messages:', messages);
+                
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = ''; // Clear existing messages
+                
+                messages.forEach(msg => {
+                    addMessageToChat({
+                        sender: msg.sender,
+                        content: msg.content,
+                        timestamp: msg.timestamp
+                    });
+                });
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        function addMessageToChat(message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const currentUsername = document.body.getAttribute('data-username');
+            const isCurrentUser = message.sender === currentUsername;
+            
+            console.log('Adding message:', message, 'Current user:', currentUsername);
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isCurrentUser ? 'sent' : 'received'}`;
+            messageDiv.innerHTML = `
+                <strong>${message.sender}</strong>
+                <p>${message.content}</p>
+                <div class="timestamp">${new Date(message.timestamp).toLocaleTimeString()}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            
+            if (!content || !currentCommunityId) return;
+
+            try {
+                console.log('Sending message:', content, 'to community:', currentCommunityId);
+                
+                // Emit the message through socket.io
+                socket.emit('sendCommunityMessage', {
+                    communityId: currentCommunityId,
+                    content: content
+                });
+
+                // Clear input after sending
+                input.value = '';
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+
+        // Listen for incoming messages
+        socket.on('communityMessage', (message) => {
+            console.log('Received message:', message);
+            addMessageToChat(message);
         });
 
-        socket.on('chatMessage', (msgData) => {
-            const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML += `<p><strong>${msgData.sender}:</strong> ${msgData.message} <small>${new Date(msgData.timestamp).toLocaleTimeString()}</small></p>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
+        // Handle enter key in chat input
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
         });
+
+        // Add error handling for socket connection
+        socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+        });
+
+        socket.on('error', (error) => {
+            console.error('Socket error:', error);
+        });
+
+        // Modal Functions
+        function showCreateModal() {
+            document.getElementById('createModal').style.display = 'flex';
+        }
+
+        function hideCreateModal() {
+            document.getElementById('createModal').style.display = 'none';
+        }
+
+        function showAddMemberModal(communityId) {
+            document.getElementById('communityId').value = communityId;
+            document.getElementById('addMemberModal').style.display = 'flex';
+        }
+
+        function hideAddMemberModal() {
+            document.getElementById('addMemberModal').style.display = 'none';
+        }
+
+        // Form Submissions
+        document.getElementById('createCommunityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nameInput = document.getElementById('communityName');
+            const descriptionInput = document.getElementById('communityDescription');
+            
+            // Check if inputs exist and have values
+            if (!nameInput || !descriptionInput) {
+                console.error('Form inputs not found');
+                return;
+            }
+
+            const formData = {
+                name: nameInput.value.trim(),
+                description: descriptionInput.value.trim()
+            };
+
+            console.log('Attempting to submit form data:', formData);
+
+            if (!formData.name || !formData.description) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch('/create-community', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData),
+                    credentials: 'include'
+                });
+
+                console.log('Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (response.ok) {
+                    // Clear form
+                    nameInput.value = '';
+                    descriptionInput.value = '';
+                    // Hide modal
+                    hideCreateModal();
+                    // Refresh page to show new community
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to create community');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error creating community');
+            }
+        });
+
+        document.getElementById('addMemberForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                communityId: document.getElementById('communityId').value,
+                username: document.getElementById('username').value
+            };
+
+            try {
+                const response = await fetch('/add-member', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Failed to add member');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error adding member');
+            }
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        async function joinCommunity(communityId) {
+            try {
+                const response = await fetch('/join-community', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ communityId }),
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Failed to join community');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error joining community');
+            }
+        }
+
+        async function handleJoinRequest(communityId, userId, approved) {
+            try {
+                const response = await fetch('/approve-join-request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ communityId, userId, approved }),
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Failed to process join request');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error processing join request');
+            }
+        }
+
+        // Update the join button display
+        function updateJoinButton(communityId, isPending) {
+            const joinBtn = document.querySelector(`[data-community="${communityId}"] .join-btn`);
+            if (joinBtn) {
+                if (isPending) {
+                    joinBtn.classList.add('pending');
+                    joinBtn.textContent = 'Request Pending';
+                    joinBtn.disabled = true;
+                } else {
+                    joinBtn.classList.remove('pending');
+                    joinBtn.textContent = 'Join Community';
+                    joinBtn.disabled = false;
+                }
+            }
+        }
+
+        async function removeMember(communityId, memberId) {
+            if (!confirm('Are you sure you want to remove this member?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/remove-member', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ communityId, memberId }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to remove member');
+                }
+
+                // Refresh the page to show updated member list
+                window.location.reload();
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Error removing member');
+            }
+        }
     </script>
-
 </body>
 </html>

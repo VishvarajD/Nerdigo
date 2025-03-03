@@ -208,6 +208,169 @@ nav ul li a:hover {
     transform: translateX(-10px);
 }
 
+.feature-card {
+    background: rgba(44, 62, 80, 0.9);
+    padding: 25px;
+    border-radius: 15px;
+    margin: 20px 0;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1c40f;
+    color: #2c3e50;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.feature-btn:hover {
+    background: #f39c12;
+    transform: translateY(-2px);
+}
+
+.feature-card h3 {
+    color: #f1c40f;
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    color: #ecf0f1;
+    margin-bottom: 15px;
+}
+
+.about-nerdigo {
+    padding: 80px 0;
+    background: rgba(44, 62, 80, 0.9);
+}
+
+.about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.about-header h2 {
+    font-size: 2.5rem;
+    color: #f1c40f;
+    margin-bottom: 10px;
+    font-family: "Playwrite IT Moderna", serif;
+}
+
+.about-header p {
+    color: #ecf0f1;
+    font-size: 1.2rem;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.about-card {
+    background: rgba(52, 73, 94, 0.9);
+    border-radius: 15px;
+    padding: 30px;
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(241, 196, 15, 0.1);
+}
+
+.about-card:hover {
+    transform: translateY(-10px);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    color: #f1c40f;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.about-card h3 {
+    color: #f1c40f;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.about-card p {
+    color: #ecf0f1;
+    margin-bottom: 15px;
+}
+
+.about-card ul, .about-card ol {
+    color: #ecf0f1;
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.about-card li {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.about-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #f1c40f, #e74c3c);
+}
+
+/* Unique styling for each card */
+.about-card.what::before {
+    background: linear-gradient(90deg, #3498db, #2980b9);
+}
+
+.about-card.why::before {
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+}
+
+.about-card.how::before {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+@media (max-width: 768px) {
+    .about-nerdigo {
+        padding: 40px 0;
+    }
+
+    .about-header h2 {
+        font-size: 2rem;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .about-card {
+        padding: 20px;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -225,7 +388,10 @@ nav ul li a:hover {
                 <li><a href="/signup">SignUp</a></li>
                 <li><a href="/login">Login</a></li>
             <% } %>
-
+            <li><a href="/roadmap-generator" class="nav-item">
+                <i class="fas fa-map-signs"></i>
+                Learning Roadmaps
+            </a></li>
         </ul>
         <% if (check) { %>
             <a href="/community-dashboard"><button class="cta-button" >Get Started</button></a>
@@ -268,6 +434,70 @@ nav ul li a:hover {
             <div class="step">
                 <h3>Step 3: Grow</h3>
                 <p>Access exclusive opportunities and grow your career.</p>
+            </div>
+        </div>
+    </section>
+    <div class="feature-card">
+        <h3>Learning Roadmaps</h3>
+        <p>Get personalized learning paths for your career goals</p>
+        <a href="/roadmap-generator" class="feature-btn">
+            <i class="fas fa-map-signs"></i>
+            Generate Roadmap
+        </a>
+    </div>
+    <section class="about-nerdigo">
+        <div class="about-container">
+            <div class="about-header">
+                <h2>Discover Nerdigo</h2>
+                <p>Your Gateway to Tech Excellence</p>
+            </div>
+
+            <div class="about-grid">
+                <!-- What is Nerdigo? -->
+                <div class="about-card what">
+                    <div class="card-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>What is Nerdigo?</h3>
+                    <p>Nerdigo is a comprehensive learning platform that combines:</p>
+                    <ul>
+                        <li>AI-powered personalized learning roadmaps</li>
+                        <li>Active tech communities</li>
+                        <li>Expert-curated resources</li>
+                        <li>Career guidance and opportunities</li>
+                    </ul>
+                </div>
+
+                <!-- Why Nerdigo? -->
+                <div class="about-card why">
+                    <div class="card-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Why Nerdigo?</h3>
+                    <p>Choose Nerdigo because:</p>
+                    <ul>
+                        <li>Personalized learning paths tailored to your goals</li>
+                        <li>Connect with like-minded tech enthusiasts</li>
+                        <li>Stay updated with latest industry trends</li>
+                        <li>Track your progress with interactive roadmaps</li>
+                        <li>Access to a supportive community</li>
+                    </ul>
+                </div>
+
+                <!-- How it Works -->
+                <div class="about-card how">
+                    <div class="card-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>How it Works</h3>
+                    <p>Get started in 4 simple steps:</p>
+                    <ol>
+                        <li>Sign up and tell us your goals</li>
+                        <li>Get your AI-generated learning roadmap</li>
+                        <li>Join relevant tech communities</li>
+                        <li>Track progress and grow together</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </section>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="add-member">
+        <h2>Add Member to Community</h2>
+        <form id="addMemberForm">
+            <input type="text" id="communityId" placeholder="Community ID" required />
+            <input type="text" id="userId" placeholder="User ID" required />
+            <button type="submit">Add Member</button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('addMemberForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+    
+            const communityId = document.getElementById('communityId').value;
+            const userId = document.getElementById('userId').value;
+    
+            const response = await fetch('/add-member', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ communityId, userId })
+            });
+    
+            const result = await response.json();
+            if (response.ok) {
+                alert('Member added successfully!');
+            } else {
+                alert(result.message || 'Error adding member');
+            }
+        });
+    </script>
+</body>
+</html>

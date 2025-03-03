@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .search-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            width: 95%;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 30px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+
+        .result-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .result-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .result-item {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .result-item h3 {
+            color: #007bff;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .result-item p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .company-name {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .description {
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Loading animation */
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .search-container {
+                padding: 15px;
+                margin: 10px auto;
+            }
+
+            .search-box {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .result-section {
+                padding: 15px;
+            }
+
+            .result-item {
+                padding: 12px;
+            }
+
+            .result-item h3 {
+                font-size: 1.1rem;
+            }
+
+            .result-item p {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-container {
+                padding: 10px;
+                width: 98%;
+            }
+
+            .results-container {
+                gap: 15px;
+            }
+
+            .result-section {
+                padding: 12px;
+            }
+
+            .result-item {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" 
+               id="searchInput" 
+               class="search-box" 
+               placeholder="Search for jobs or communities..."
+               aria-label="Search input">
+        
+        <div class="results-container">
+            <div class="result-section">
+                <h2>Jobs</h2>
+                <div id="jobResults"></div>
+            </div>
+            <div class="result-section">
+                <h2>Communities</h2>
+                <div id="communityResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        const jobResults = document.getElementById('jobResults');
+        const communityResults = document.getElementById('communityResults');
+
+        function showLoading(element) {
+            element.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+        }
+
+        function showNoResults(element) {
+            element.innerHTML = '<div class="no-results">No results found</div>';
+        }
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 300);
+        });
+
+        async function performSearch() {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm.length < 2) {
+                jobResults.innerHTML = '';
+                communityResults.innerHTML = '';
+                return;
+            }
+
+            // Show loading state
+            showLoading(jobResults);
+            showLoading(communityResults);
+
+            try {
+                // Search Jobs
+                const jobsResponse = await fetch(`/api/search/jobs?q=${encodeURIComponent(searchTerm)}`);
+                const jobs = await jobsResponse.json();
+                
+                if (jobs.length === 0) {
+                    showNoResults(jobResults);
+                } else {
+                    jobResults.innerHTML = jobs.map(job => `
+                        <div class="result-item">
+                            <h3>${job.title}</h3>
+                            <p class="company-name">${job.company}</p>
+                            <p class="description">${job.description.substring(0, 100)}${job.description.length > 100 ? '...' : ''}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Search Communities
+                const communitiesResponse = await fetch(`/api/search/communities?q=${encodeURIComponent(searchTerm)}`);
+                const communities = await communitiesResponse.json();
+                
+                if (communities.length === 0) {
+                    showNoResults(communityResults);
+                } else {
+                    communityResults.innerHTML = communities.map(community => `
+                        <div class="result-item">
+                            <h3>${community.name}</h3>
+                            <p class="description">${community.description}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error performing search:', error);
+                jobResults.innerHTML = '<div class="no-results">Error loading results</div>';
+                communityResults.innerHTML = '<div class="no-results">Error loading results</div>';
+            }
+        }
+    </script>
+</body>
+</html> 

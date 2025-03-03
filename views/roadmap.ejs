@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Roadmap Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2c3e50 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #f1c40f;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .generator-form {
+            background: rgba(44, 62, 80, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f1c40f;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            background: #34495e;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #f1c40f, #f39c12);
+            color: #1e1e1e;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
+        }
+
+        .roadmap-container {
+            margin-top: 40px;
+        }
+
+        .roadmap-step {
+            background: rgba(44, 62, 80, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            border-left: 4px solid #f1c40f;
+        }
+
+        .step-number {
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f1c40f;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e1e1e;
+            font-weight: bold;
+        }
+
+        .resources-list {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        .resource-link {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .resource-link:hover {
+            color: #2980b9;
+        }
+
+        .time-estimate {
+            color: #f1c40f;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #f1c40f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .ai-badge, .fallback-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .ai-badge {
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            color: white;
+        }
+
+        .fallback-badge {
+            background: #95a5a6;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Learning Roadmap Generator</h1>
+            <p>Generate your personalized learning path</p>
+        </div>
+
+        <div class="generator-form">
+            <form id="roadmapForm">
+                <div class="form-group">
+                    <label for="field">Field of Study</label>
+                    <select id="field" required>
+                        <option value="web-development">Web Development</option>
+                        <option value="data-science">Data Science</option>
+                        <option value="machine-learning">Machine Learning</option>
+                        <option value="mobile-development">Mobile Development</option>
+                        <option value="cybersecurity">Cybersecurity</option>
+                        <option value="blockchain">Blockchain Development</option>
+                        <option value="game-development">Game Development</option>
+                        <option value="cloud-computing">Cloud Computing</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="currentLevel">Current Level</label>
+                    <select id="currentLevel" required>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="goals">Learning Goals</label>
+                    <textarea id="goals" rows="4" placeholder="What do you want to achieve?"></textarea>
+                </div>
+
+                <button type="submit" class="generate-btn">Generate Roadmap</button>
+            </form>
+        </div>
+
+        <div class="loading-overlay">
+            <div class="loading-spinner"></div>
+        </div>
+        <div class="error-message"></div>
+        <div class="success-message"></div>
+
+        <div id="roadmapContainer" class="roadmap-container"></div>
+    </div>
+
+    <script>
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        const errorMessage = document.querySelector('.error-message');
+        const successMessage = document.querySelector('.success-message');
+
+        document.getElementById('roadmapForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            const formData = {
+                field: document.getElementById('field').value,
+                currentLevel: document.getElementById('currentLevel').value,
+                goals: document.getElementById('goals').value
+            };
+
+            try {
+                const response = await fetch('/generate-roadmap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to generate roadmap');
+                }
+
+                successMessage.textContent = 'Roadmap generated successfully!';
+                successMessage.style.display = 'block';
+                displayRoadmap(data);
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = error.message || 'Error generating roadmap';
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        function displayRoadmap(roadmap) {
+            const container = document.getElementById('roadmapContainer');
+            container.innerHTML = `
+                <div class="roadmap-header">
+                    <h2>${roadmap.title}</h2>
+                    ${roadmap.isAIGenerated ? 
+                        '<div class="ai-badge"><i class="fas fa-robot"></i> AI Generated Roadmap</div>' : 
+                        '<div class="fallback-badge"><i class="fas fa-book"></i> Standard Template</div>'
+                    }
+                    <p class="roadmap-description">${roadmap.description}</p>
+                </div>
+                <div class="steps">
+                    ${roadmap.steps.map((step, index) => `
+                        <div class="roadmap-step">
+                            <div class="step-number">${index + 1}</div>
+                            <div class="step-content">
+                                <h3>${step.title}</h3>
+                                <p>${step.description}</p>
+                                <div class="resources-list">
+                                    ${step.resources.map(resource => `
+                                        <a href="${resource.url}" target="_blank" class="resource-link">
+                                            <i class="fas fa-${getResourceIcon(resource.type)}"></i>
+                                            ${resource.name}
+                                        </a>
+                                    `).join('')}
+                                </div>
+                                <div class="time-estimate">
+                                    <i class="fas fa-clock"></i>
+                                    Estimated time: ${step.timeEstimate}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function getResourceIcon(type) {
+            const icons = {
+                'video': 'video',
+                'article': 'file-alt',
+                'course': 'graduation-cap',
+                'documentation': 'book',
+                'interactive': 'laptop-code',
+                'platform': 'globe'
+            };
+            return icons[type] || 'link';
+        }
+    </script>
+</body>
+</html> 
