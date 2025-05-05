@@ -20,9 +20,11 @@ const LocalStrategy = require('passport-local').Strategy;
 const Roadmap = require('./models/Roadmap');
 const { generateAIRoadmap } = require('./services/aiService');
 const Analytics = require('./models/Analytics');
+const path = require('path');
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 app.use(express.static('public')); // Serve static files like CSS/JS
 app.use(cookieParser()); // Parse cookies for authentication
